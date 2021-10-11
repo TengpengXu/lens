@@ -2,7 +2,6 @@
 # @Time : 2021/10/8 22:00
 # @Author : Tengpeng Xu
 # @File : Lens
-# ...
 
 import numpy as np
 import sympy as sp
