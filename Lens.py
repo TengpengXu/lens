@@ -9,8 +9,17 @@ import matplotlib.pyplot as plt
 
 xx = sp.symbols('x')
 
+
 class ConvexLens(object):
-    def __init__(self, lens_type='spheric', left_func=None, right_func=None, width=0.1, height=1, refractive=0.8, x_range=(-10, 10)):
+    def __init__(self,
+                 lens_type='spheric',
+                 left_func=None,
+                 right_func=None,
+                 width=0.1,
+                 height=1,
+                 refractive=0.8,
+                 x_range=(-10,
+                          10)):
         self.width = width
         self.height = height
         self.refractive = refractive
@@ -23,7 +32,7 @@ class ConvexLens(object):
             self.ur_side = sp.sqrt(R**2 - (xx + R - width)**2)
             self.dr_side = -sp.sqrt(R ** 2 - (xx + R - width) ** 2)
         else:
-            if left_func == None or right_func == None:
+            if left_func is None or right_func is None:
                 raise ValueError
             hl = height / left_func.evalf(subs={xx: width})
             hr = height / right_func.evalf(subs={xx: width})
@@ -33,11 +42,11 @@ class ConvexLens(object):
             self.dr_side = -hr * right_func.subs(xx, -xx + width)
 
     def refraction(self, x, y, ki, vi, side):
-        lens_side = getattr(self, side+'_side')
+        lens_side = getattr(self, side + '_side')
         kn = float(-1 / lens_side.diff(xx).evalf(subs={xx: x}))
         vn = int('r' in side) - int('l' in side)
         ni = vn * vi * (1 + kn * ki)
-        refractive = self.refractive ** (int(ni<0) - int(ni>0))
+        refractive = self.refractive ** (int(ni < 0) - int(ni > 0))
         tan_alpha = (ki - kn) / (1 + kn * ki)
         sin_alpha = np.sqrt(tan_alpha ** 2 / (1 + tan_alpha ** 2))
         sin_beta = sin_alpha / refractive
@@ -58,21 +67,21 @@ class ConvexLens(object):
         path0 = k0 * (xx - x0) + y0
         try:
             res = np.array(sp.solve(path0 - self.ul_side, xx))
-            x1 = res[(res<=0)&(res>=-self.width)][0]
+            x1 = res[(res <= 0) & (res >= -self.width)][0]
             side = 'ul'
-        except:
+        except BaseException:
             res = np.array(sp.solve(path0 - self.dl_side, xx))
             x1 = res[(res <= 0) & (res >= -self.width)][0]
             side = 'dl'
         y1 = path0.evalf(subs={xx: x1})
         k1, v1 = self.refraction(x1, y1, k0, v0, side)
 
-        path1  = k1 * (xx - x1) + y1
+        path1 = k1 * (xx - x1) + y1
         try:
             res = np.array(sp.solve(path1 - self.ur_side, xx))
-            x2 = res[(res<=self.width)&(res>=0)][0]
+            x2 = res[(res <= self.width) & (res >= 0)][0]
             side = 'ur'
-        except:
+        except BaseException:
             res = np.array(sp.solve(path1 - self.dr_side, xx))
             x2 = res[(res <= self.width) & (res >= 0)][0]
             side = 'dr'
