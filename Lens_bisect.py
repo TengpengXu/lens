@@ -8,8 +8,10 @@ from scipy.optimize import bisect
 from scipy.misc import derivative as deriv
 import matplotlib.pyplot as plt
 
+
 class Lens(object):
-    def __init__(self, left_func, right_func, width=0.1, height=1, refractive=0.8, x_range=(-10, 10)):
+    def __init__(self, left_func, right_func, width=0.1,
+                 height=1, refractive=0.8, x_range=(-10, 10)):
         self.left_func = left_func
         self.right_func = right_func
         self.width = width
@@ -44,19 +46,19 @@ class Lens(object):
         return k_out
 
     def get_path(self, x0, y0, k0, x_end=10):
-        path0 = lambda x: k0 * (x - x0) + y0
+        def path0(x): return k0 * (x - x0) + y0
 
-        func1 = lambda x: path0(x) - self.left_side(x)
+        def func1(x): return path0(x) - self.left_side(x)
         x1 = bisect(func1, -self.width, 0)
         y1 = path0(x1)
         k1 = self.refraction('left', x1, y1, k0)
-        path1 = lambda x: k1 * (x - x1) + y1
+        def path1(x): return k1 * (x - x1) + y1
 
-        func2 = lambda x: path1(x) - self.right_side(x)
+        def func2(x): return path1(x) - self.right_side(x)
         x2 = bisect(func2, 0, self.width)
         y2 = path1(x2)
         k2 = self.refraction('right', x2, y2, k1)
-        path2 = lambda x: k2 * (x - x2) + y2
+        def path2(x): return k2 * (x - x2) + y2
         y_end = path2(x_end)
 
         self.paths = [path0, path1, path2]
@@ -80,21 +82,25 @@ class Lens(object):
     def plot_path(self):
         plt.plot(self.xs, self.ys)
 
+
 def left_func(x):
     # 透镜左侧函数形式
-    return np.sqrt(1-(1-x)**2)
+    return np.sqrt(1 - (1 - x)**2)
+
 
 def right_func(x):
     # 透镜右侧函数形式
-    return np.sqrt(1-(1-x)**2)
+    return np.sqrt(1 - (1 - x)**2)
 
-w, h, n = 0.5, 1, 0.8 # 透镜半宽度，半高度，折射率
 
-lens = Lens(left_func, right_func, width=w, height=h, refractive=n, x_range=(-10, 4)) # 设置透镜系统
-lens.plot_axis() # 画出主光轴
-lens.plot_lens() # 画出透镜
+w, h, n = 0.5, 1, 0.8  # 透镜半宽度，半高度，折射率
 
-x0, y0, k0 = -10, 0, 0 # 光线起点坐标，斜率
+lens = Lens(left_func, right_func, width=w, height=h,
+            refractive=n, x_range=(-10, 4))  # 设置透镜系统
+lens.plot_axis()  # 画出主光轴
+lens.plot_lens()  # 画出透镜
+
+x0, y0, k0 = -10, 0, 0  # 光线起点坐标，斜率
 # lens.get_path(x0, y0, k0, x_end=4)
 # lens.plot_path()
 
