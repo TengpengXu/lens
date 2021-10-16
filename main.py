@@ -8,9 +8,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-w, h, n = 0.5, 1, 1.2 # 透镜半宽度，半高度，折射率
+w, h, n = 0.5, 1, 1.2  # 透镜半宽度，半高度，折射率
 
-lens = ConvexLens(width=w, height=h, refractive=n, x_range=(-10, 5)) # 设置透镜系统
+lens = ConvexLens(width=w, height=h, refractive=n, x_range=(-10, 5))  # 设置透镜系统
 
 # 光线起点坐标，斜率， 方向（往前为1， 往后为-1）
 x0, k0, v0 = -10, 0, 1
@@ -22,4 +22,3 @@ for y0 in y0s:
 lens.plot_path()
 plt.grid()
 plt.show()
-
